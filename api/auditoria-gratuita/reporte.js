@@ -49,6 +49,8 @@ function createReporteHandler(overrides) {
 
     res.status(200);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Cache-Control', 'private, no-store');
     res.send(html);
   };
 }

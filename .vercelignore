@@ -1,4 +1,5 @@
 .claude/
+api/**/*.test.js
 .env.local.example
 .mcp.json
 CLAUDE.md

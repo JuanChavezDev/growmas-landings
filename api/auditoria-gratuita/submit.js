@@ -36,9 +36,7 @@ function createSubmitHandler(overrides) {
 
     const { name, whatsapp, email, answers } = data;
     const metrics = calculateMetrics(answers);
-    const report = await deps.anthropicClient.messages
-      ? await generateNarrative(deps.anthropicClient, name, metrics)
-      : null;
+    const report = await generateNarrative(deps.anthropicClient, name, metrics);
 
     const encoded = encodeReportData({ name, metrics, report });
     const reportUrl = `${deps.siteUrl}/auditoria-gratuita/reporte?d=${encoded}`;

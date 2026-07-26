@@ -38,6 +38,8 @@ test('renders the report HTML when the query param decodes successfully', () => 
 
   assert.equal(res.statusCode, 200);
   assert.equal(res.headers['Content-Type'], 'text/html; charset=utf-8');
+  assert.equal(res.headers['X-Robots-Tag'], 'noindex, nofollow');
+  assert.equal(res.headers['Cache-Control'], 'private, no-store');
   assert.match(res.body, /Ana/);
   assert.match(res.body, /wa\.me\/51999999999/);
 });

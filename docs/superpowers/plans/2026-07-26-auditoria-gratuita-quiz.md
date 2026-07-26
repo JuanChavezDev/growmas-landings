@@ -792,7 +792,7 @@ function renderReportHtml({ name, metrics, report, whatsappUrl }) {
   <p class="intro">${intro}</p>
   ${stageRows}
   <p class="cierre">${cierreFinal}</p>
-  <a class="cta" href="${safeWhatsappUrl}">💬 Quiero agendar mi reunión para adquirir el Sistema Más →</a>
+  <a class="cta" href="${safeWhatsappUrl}">💬 Quiero agendar mi llamada para revisar estos resultados →</a>
 </main>
 </body>
 </html>`;
@@ -1636,7 +1636,7 @@ function createReporteHandler(overrides) {
     }
 
     const message = encodeURIComponent(
-      `Hola, ya llené mi auditoría (${payload.name}) y quiero agendar mi reunión para adquirir el Sistema Más.`,
+      `Hola, ya llené mi auditoría (${payload.name}) y quiero agendar una llamada para revisar mis resultados.`,
     );
     const whatsappUrl = `https://wa.me/${deps.businessWhatsappNumber}?text=${message}`;
 

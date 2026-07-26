@@ -6,7 +6,6 @@ GEMINI.md
 README.md
 components.json
 next.config.ts
-package.json
 postcss.config.js
 src/
 tailwind.config.ts

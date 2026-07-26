@@ -11,8 +11,10 @@ La landing ya construida (hero + ciclo de 5 etapas) termina en un botón "Empeza
 1. El lead responde un cuestionario fijo de 13-14 preguntas (según ramificación).
 2. Deja nombre, WhatsApp y email.
 3. El sistema calcula una pérdida estimada en soles por etapa (fórmula, no IA) y genera un texto profesional y corto alrededor de esos números (IA).
-4. El lead recibe un link a su reporte personalizado por email (siempre) y por WhatsApp (si la plantilla de YCloud ya está aprobada).
-5. El reporte (`growmas.io/auditoria-gratuita/reporte/<id>`) termina con un botón que abre WhatsApp con un mensaje para agendar la llamada — directo al WhatsApp de negocio de Juan, nunca a otra landing.
+4. El lead recibe un link a su reporte personalizado por email (siempre) y por WhatsApp (si la plantilla de YCloud ya está aprobada) — el mensaje de WhatsApp lo manda el sistema al WhatsApp del propio lead, con el link.
+5. El reporte (`growmas.io/auditoria-gratuita/reporte?d=<datos codificados>`) termina con un botón que abre WhatsApp con un mensaje para agendar la llamada — directo al WhatsApp de negocio de Juan, nunca a otra landing.
+
+**Sin base de datos (decisión 2026-07-26):** no se usa Supabase ni ningún otro almacenamiento server-side. El reporte se calcula una sola vez al enviar el formulario y sus datos (números + texto de la IA) se codifican directamente en la URL del reporte — la página del reporte solo decodifica y renderiza, no consulta nada. El registro de "a quién se le envió" lo lleva Juan por sus propios medios (historial de WhatsApp e email), no el sistema.
 
 ## 2. Decisiones ya tomadas (no reabrir sin razón)
 
@@ -104,43 +106,27 @@ Todos los números se calculan en el servidor antes de llamar a la IA; la IA los
 
 ```
 Landing (auditoria-gratuita/index.html)
-  → clic en CTA → abre el módulo de cuestionario (mismo archivo o uno nuevo, ver #7)
+  → clic en CTA → abre el módulo de cuestionario (mismo archivo, ver #7)
   → responde 13-15 preguntas (estado en memoria del navegador, sin llamadas al servidor)
   → pantalla final: nombre + WhatsApp + email
   → POST /api/auditoria-gratuita/submit
         1. valida input
         2. calcula métricas (fórmulas de la sección 4)
         3. llama a Claude API → texto narrativo por etapa + intro + cierre
-        4. guarda todo en Supabase (tabla auditoria_gratuita_leads)
-        5. envía email con Resend (link al reporte)
-        6. intenta enviar plantilla de WhatsApp vía YCloud (no bloqueante)
+        4. codifica { name, metrics, report } → gzip → base64url → query param `d`
+        5. envía email con Resend al lead (link al reporte)
+        6. intenta enviar plantilla de WhatsApp vía YCloud al lead (no bloqueante)
         7. responde { reportUrl }
   → navegador redirige a reportUrl
-GET /auditoria-gratuita/reporte/:id  (rewrite → /api/auditoria-gratuita/reporte/[id])
-  → lee el registro de Supabase (server-side, service role key)
+GET /auditoria-gratuita/reporte?d=<datos codificados>  (rewrite → /api/auditoria-gratuita/reporte)
+  → decodifica el query param `d` (gzip+base64url → JSON)
   → renderiza la página del reporte con el mismo branding de la landing
   → CTA final → wa.me al número de negocio de Juan
 ```
 
-## 6. Esquema de Supabase
+No hay base de datos ni almacenamiento server-side. El reporte es puro cómputo: se genera una vez en `submit`, se codifica en la URL, y `reporte` solo decodifica y pinta HTML — es una función pura sobre el contenido de la URL, no hay estado que pueda desincronizarse ni tabla que mantener.
 
-Tabla `auditoria_gratuita_leads`:
-
-| columna | tipo | notas |
-|---|---|---|
-| `id` | uuid, PK, default `gen_random_uuid()` | usado como slug en la URL del reporte |
-| `created_at` | timestamptz, default `now()` | |
-| `name` | text | |
-| `whatsapp` | text | |
-| `email` | text | |
-| `answers` | jsonb | respuestas crudas, keys = ids de la sección 3 |
-| `metrics` | jsonb | números calculados (sección 4) |
-| `report` | jsonb | texto generado por la IA (intro, por etapa, cierre) |
-| `email_sent` | boolean, default false | |
-| `email_sent_at` | timestamptz, nullable | |
-| `whatsapp_status` | text, default `'not_attempted'` | `'not_attempted' \| 'sent' \| 'failed' \| 'template_not_configured'` |
-
-**RLS:** activado, sin policies públicas. Ninguna llamada desde el navegador toca Supabase directamente — todo pasa por las funciones serverless usando la **service role key** (variable de entorno en Vercel, nunca en el repo ni en el cliente). El reporte es públicamente accesible solo a través de la función `reporte/[id]`, que decide qué exponer.
+**Nota de seguridad aceptada:** los datos del reporte no llevan firma/HMAC, así que alguien con conocimientos técnicos podría en teoría fabricar una URL con números falsos. Se acepta este riesgo para la v1: el reporte no dispara ninguna acción sensible (no es un pago, no otorga acceso a nada), es contenido de marketing. Si más adelante se necesita, agregar una firma HMAC sobre el payload es un cambio pequeño y aislado.
 
 ## 7. Dónde vive el cuestionario en la landing
 
@@ -164,19 +150,20 @@ Input al modelo: JSON con `answers`, `metrics` ya calculados, y el nombre del le
 
 ## 9. Email (Resend) y WhatsApp (YCloud)
 
-- **Email:** siempre se intenta enviar tras guardar el registro. Asunto tipo "Tu auditoría está lista, {{name}}". Cuerpo corto con el link al reporte. Requiere dominio `growmas.io` verificado en Resend para buena entregabilidad.
-- **WhatsApp:** requiere que Juan tenga aprobada en YCloud una plantilla de mensaje de servicio (ej. "Hola {{1}}, tu Auditoría de Sistema Más ya está lista: {{2}}") sobre su número real con coexistencia. Si la plantilla no existe o la llamada falla, se guarda `whatsapp_status = 'template_not_configured'` (o `'failed'`) y el flujo continúa sin bloquear al lead — el email es el canal garantizado.
+- **Email:** siempre se intenta enviar tras calcular el reporte. Asunto tipo "Tu auditoría está lista, {{name}}". Cuerpo corto con el link al reporte. Requiere dominio `growmas.io` verificado en Resend para buena entregabilidad.
+- **WhatsApp:** el sistema le manda el link **al WhatsApp del lead** (no al de Juan) usando una plantilla de YCloud ya aprobada (ej. "Hola {{1}}, tu Auditoría de Sistema Más ya está lista: {{2}}") sobre el número real de negocio de Juan, con coexistencia. Si la plantilla no existe o la llamada falla, simplemente no se envía y se loguea — el email es el canal garantizado, nunca bloquea la respuesta al lead.
+- No hay tabla ni registro de qué se envió a quién — eso lo lleva Juan por su cuenta (historial de WhatsApp Business y de su herramienta de email).
 
 ## 10. Manejo de errores
 
 - Fallo de Claude → reintento único → fallback a plantilla fija (sección 8).
 - Fallo de email → se loguea, no bloquea la respuesta; el lead ya ve su reporte en el navegador de todas formas.
-- Fallo de WhatsApp (o plantilla no configurada) → no bloquea, se marca el estado y sigue.
-- `reporte/[id]` con id inexistente → página amigable ("no encontramos esta auditoría") con link para empezar una nueva, no un error crudo.
+- Fallo de WhatsApp (o plantilla no configurada) → no bloquea, se loguea y sigue.
+- `/auditoria-gratuita/reporte` sin el query param `d`, o con un valor que no decodifica a JSON válido → página amigable ("no encontramos esta auditoría") con link para empezar una nueva, no un error crudo.
 
 ## 11. Variables de entorno (Vercel, nunca en el repo)
 
-`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `YCLOUD_API_KEY`, `YCLOUD_WHATSAPP_NUMBER`, `YCLOUD_TEMPLATE_NAME`, `BUSINESS_WHATSAPP_NUMBER` (el número de Juan para el CTA final del reporte).
+`ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `YCLOUD_API_KEY`, `YCLOUD_WHATSAPP_NUMBER`, `YCLOUD_TEMPLATE_NAME`, `BUSINESS_WHATSAPP_NUMBER` (el número de Juan para el CTA final del reporte).
 
 ## 12. Fuera de alcance (explícitamente descartado)
 
@@ -185,4 +172,6 @@ Input al modelo: JSON con `answers`, `metrics` ya calculados, y el nombre del le
 - PDF adjunto (se reemplazó por página web con link).
 - Mostrar condiciones comerciales (precio, mínimo de meses) en el reporte.
 - n8n o Make.com como orquestador de este flujo.
+- **Base de datos de cualquier tipo** (Supabase u otro) — decisión 2026-07-26, el reporte vive codificado en la URL.
+- Reutilizar los proyectos Supabase existentes (`whatsapp-saas`, `fidelizacion-app`) para esto — son de otros propósitos.
 - Cualquier cambio a `diagnostico-de-fuga/` — este trabajo no la toca.

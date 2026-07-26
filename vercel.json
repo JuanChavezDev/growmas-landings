@@ -1,6 +1,7 @@
 {
   "framework": null,
   "rewrites": [
-    { "source": "/", "destination": "/diagnostico-de-fuga/index.html" }
+    { "source": "/", "destination": "/diagnostico-de-fuga/index.html" },
+    { "source": "/auditoria-gratuita/reporte", "destination": "/api/auditoria-gratuita/reporte" }
   ]
 }

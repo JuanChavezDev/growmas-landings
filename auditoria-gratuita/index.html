@@ -261,7 +261,7 @@
       { value: 'automatico', label: 'Sí, automático' },
       { value: 'depende_persona', label: 'Depende de la persona que atienda' },
       { value: 'nada', label: 'No tengo nada' },
-    ], prompt: '¿Tienes algún sistema automático para ofrecer eso?', showIf: function (a) { return a.tipo_entrega === 'producto' || a.tipo_entrega === 'ambos'; } },
+    ], prompt: '¿Tienes algún sistema automático para ofrecer eso, o depende de que alguien se acuerde?', showIf: function (a) { return a.tipo_entrega === 'producto' || a.tipo_entrega === 'ambos'; } },
     { id: 'tasa_recompra', type: 'scale10', prompt: 'De cada 10 clientes que ya te compraron, ¿cuántos vuelven a comprarte?' },
     { id: 'tiene_reactivacion', type: 'choice', options: [
       { value: 'automatico', label: 'Sí, algo automático' },

@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createSubmitHandler } = require('./submit');
+const { _resetForTests, MAX_REQUESTS_PER_WINDOW } = require('../../lib/auditoria-gratuita/rate-limit');
 
 function fullAnswers(overrides) {
   return Object.assign(
@@ -42,6 +43,7 @@ function mockRes() {
 }
 
 test('returns a reportUrl and calls email + whatsapp on a valid submission', async () => {
+  _resetForTests();
   const emailCalls = [];
   const whatsappCalls = [];
   const handler = createSubmitHandler({
@@ -56,6 +58,7 @@ test('returns a reportUrl and calls email + whatsapp on a valid submission', asy
 
   const req = {
     method: 'POST',
+    headers: { 'x-forwarded-for': '9.9.9.1' },
     body: { name: 'Ana', whatsapp: '+51999999999', email: 'ana@example.com', answers: fullAnswers({}) },
   };
   const res = mockRes();
@@ -71,6 +74,7 @@ test('returns a reportUrl and calls email + whatsapp on a valid submission', asy
 });
 
 test('returns 400 with errors and calls neither email nor whatsapp on invalid input', async () => {
+  _resetForTests();
   const emailCalls = [];
   const whatsappCalls = [];
   const handler = createSubmitHandler({
@@ -83,7 +87,11 @@ test('returns 400 with errors and calls neither email nor whatsapp on invalid in
     siteUrl: 'https://growmas.io',
   });
 
-  const req = { method: 'POST', body: { name: '', whatsapp: '', email: 'bad', answers: {} } };
+  const req = {
+    method: 'POST',
+    headers: { 'x-forwarded-for': '9.9.9.2' },
+    body: { name: '', whatsapp: '', email: 'bad', answers: {} },
+  };
   const res = mockRes();
 
   await handler(req, res);
@@ -95,6 +103,7 @@ test('returns 400 with errors and calls neither email nor whatsapp on invalid in
 });
 
 test('still returns a reportUrl when the email dependency throws (email is non-blocking)', async () => {
+  _resetForTests();
   const handler = createSubmitHandler({
     anthropicClient: { messages: { create: async () => { throw new Error('offline in test'); } } },
     sendReportEmail: async () => { throw new Error('resend is down'); },
@@ -107,6 +116,7 @@ test('still returns a reportUrl when the email dependency throws (email is non-b
 
   const req = {
     method: 'POST',
+    headers: { 'x-forwarded-for': '9.9.9.3' },
     body: { name: 'Ana', whatsapp: '+51999999999', email: 'ana@example.com', answers: fullAnswers({}) },
   };
   const res = mockRes();
@@ -118,6 +128,7 @@ test('still returns a reportUrl when the email dependency throws (email is non-b
 });
 
 test('rejects non-POST methods with 405', async () => {
+  _resetForTests();
   const handler = createSubmitHandler({
     anthropicClient: { messages: { create: async () => { throw new Error('unused'); } } },
     sendReportEmail: async () => {},
@@ -128,8 +139,38 @@ test('rejects non-POST methods with 405', async () => {
     siteUrl: 'https://growmas.io',
   });
 
-  const req = { method: 'GET', body: {} };
+  const req = { method: 'GET', headers: { 'x-forwarded-for': '9.9.9.4' }, body: {} };
   const res = mockRes();
   await handler(req, res);
   assert.equal(res.statusCode, 405);
+});
+
+test('rate limits repeated submissions from the same IP', async () => {
+  _resetForTests();
+  const handler = createSubmitHandler({
+    anthropicClient: { messages: { create: async () => { throw new Error('offline in test'); } } },
+    sendReportEmail: async () => ({ id: 'email_1' }),
+    sendReportWhatsapp: async () => ({ ok: true }),
+    resendApiKey: 'resend-key',
+    ycloudApiKey: 'ycloud-key',
+    ycloudTemplateName: 'auditoria_lista',
+    siteUrl: 'https://growmas.io',
+  });
+
+  const makeReq = () => ({
+    method: 'POST',
+    headers: { 'x-forwarded-for': '9.9.9.5' },
+    body: { name: 'Ana', whatsapp: '+51999999999', email: 'ana@example.com', answers: fullAnswers({}) },
+  });
+
+  for (let i = 0; i < MAX_REQUESTS_PER_WINDOW; i++) {
+    const res = mockRes();
+    await handler(makeReq(), res);
+    assert.equal(res.statusCode, 200);
+  }
+
+  const blockedRes = mockRes();
+  await handler(makeReq(), blockedRes);
+  assert.equal(blockedRes.statusCode, 429);
+  assert.ok(Array.isArray(blockedRes.body.errors));
 });

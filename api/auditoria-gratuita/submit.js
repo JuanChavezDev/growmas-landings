@@ -7,6 +7,7 @@ const { generateNarrative } = require('../../lib/auditoria-gratuita/narrative');
 const { encodeReportData } = require('../../lib/auditoria-gratuita/report-codec');
 const { sendReportEmail: defaultSendReportEmail } = require('../../lib/auditoria-gratuita/email');
 const { sendReportWhatsapp: defaultSendReportWhatsapp } = require('../../lib/auditoria-gratuita/whatsapp');
+const { checkRateLimit } = require('../../lib/auditoria-gratuita/rate-limit');
 
 function createSubmitHandler(overrides) {
   const deps = Object.assign(
@@ -25,6 +26,13 @@ function createSubmitHandler(overrides) {
   return async function handler(req, res) {
     if (req.method !== 'POST') {
       res.status(405).json({ errors: ['Method not allowed'] });
+      return;
+    }
+
+    const clientIp = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
+    const rateLimitResult = checkRateLimit(clientIp);
+    if (!rateLimitResult.allowed) {
+      res.status(429).json({ errors: ['Demasiadas solicitudes. Intenta de nuevo más tarde.'] });
       return;
     }
 

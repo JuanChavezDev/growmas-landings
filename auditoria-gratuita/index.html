@@ -96,6 +96,24 @@
   .cycle-note p { font-size:14.5px; line-height:1.65; color:#B4B4BC; margin:0; }
   .cycle-note strong { color:#fff; font-weight:600; }
 
+  .quiz { max-width:560px; margin:0 auto; text-align:left; }
+  .quiz-progress { height:4px; background:#1a1a22; border-radius:2px; margin-bottom:28px; overflow:hidden; }
+  .quiz-progress-bar { height:100%; background:linear-gradient(90deg,#8B5CF6,#D946EF); transition:width .3s ease; }
+  .quiz-question { font-family:Sora,sans-serif; font-weight:700; font-size:19px; margin-bottom:20px; line-height:1.35; }
+  .quiz-options { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+  .quiz-option { display:block; width:100%; text-align:left; background:#111118; border:1px solid rgba(255,255,255,.08); color:#fff; padding:14px 18px; border-radius:12px; font-size:15px; cursor:pointer; font-family:inherit; }
+  .quiz-option:hover, .quiz-option.selected { border-color:#8B5CF6; background:rgba(139,92,246,.12); }
+  .quiz-scale { display:flex; gap:6px; margin-bottom:24px; flex-wrap:wrap; }
+  .quiz-scale button { flex:1; min-width:40px; padding:12px 0; border-radius:10px; border:1px solid rgba(255,255,255,.08); background:#111118; color:#fff; font-family:'Sora',sans-serif; font-weight:700; cursor:pointer; }
+  .quiz-scale button:hover, .quiz-scale button.selected { border-color:#8B5CF6; background:rgba(139,92,246,.12); }
+  .quiz-input { width:100%; background:#111118; border:1px solid rgba(255,255,255,.08); color:#fff; padding:14px 18px; border-radius:12px; font-size:15px; margin-bottom:20px; font-family:inherit; }
+  .quiz-nav { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .quiz-back { color:#71717A; background:none; border:none; font-size:14px; cursor:pointer; font-family:inherit; }
+  .quiz-next { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#8B5CF6,#D946EF); color:#fff; padding:14px 28px; border-radius:12px; font-weight:600; font-size:15px; border:none; cursor:pointer; font-family:inherit; }
+  .quiz-next:disabled { opacity:.4; cursor:not-allowed; }
+  .quiz-error { color:#F87171; font-size:13.5px; margin-top:12px; }
+  .quiz-loading { text-align:center; padding:40px 0; color:#A1A1AA; }
+
   @media (max-width:640px){
     #hero-diagram{ max-width:280px; }
     #hero-diagram .cycle-badge{ transform:translate(-50%,-50%) scale(.72) !important; }
@@ -183,7 +201,7 @@
     <p class="cta-sub">Toma menos de 3 minutos. Es gratis, sin compromiso.</p>
   </div>
 
-  <div id="auditoria"></div>
+  <div id="auditoria" class="quiz"></div>
 </section>
 </main>
 
@@ -197,7 +215,214 @@
   document.getElementById('start-audit').addEventListener('click', function () {
     var target = document.getElementById('auditoria');
     if (target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+    startQuiz();
   });
+</script>
+
+<script>
+(function () {
+  var QUESTIONS = [
+    { id: 'clientes_mes', type: 'number', min: 0, prompt: '¿Cuántos clientes atiendes o cierras al mes?' },
+    { id: 'ticket_promedio', type: 'number', min: 0, prompt: '¿Cuál es tu ticket promedio por venta/cliente? (S/)' },
+    { id: 'canal_adquisicion', type: 'choice', options: [
+      { value: 'redes_organico', label: 'Redes sociales (orgánico)' },
+      { value: 'recomendaciones', label: 'Recomendaciones' },
+      { value: 'publicidad_paga', label: 'Publicidad paga' },
+      { value: 'no_lo_se', label: 'No tengo claro de dónde vienen' },
+    ], prompt: '¿De dónde viene la mayoría de tus clientes nuevos?' },
+    { id: 'leads_mes', type: 'number_or_unknown', min: 0, prompt: '¿Cuántos leads o contactos nuevos te escribieron el mes pasado?' },
+    { id: 'tiempo_respuesta', type: 'choice', options: [
+      { value: 'minutos', label: 'En minutos' },
+      { value: 'mismo_dia', label: 'El mismo día' },
+      { value: 'dia_siguiente', label: 'Al día siguiente' },
+      { value: 'a_veces_mas_de_un_dia', label: 'A veces se me pasa más de un día' },
+    ], prompt: 'Cuando alguien te escribe, ¿en cuánto tiempo respondes en promedio?' },
+    { id: 'tasa_cierre', type: 'scale10', prompt: 'De cada 10 que preguntan, ¿cuántos terminan comprando?' },
+    { id: 'hace_seguimiento', type: 'choice', options: [
+      { value: 'tengo_proceso', label: 'Tengo un proceso de seguimiento' },
+      { value: 'a_veces', label: 'A veces, si me acuerdo' },
+      { value: 'casi_nunca', label: 'Casi nunca vuelvo a escribirle' },
+    ], prompt: 'Cuando alguien muestra interés pero no compra al toque, ¿le haces seguimiento?' },
+    { id: 'tasa_seguimiento', type: 'scale10', prompt: 'De esos que no compran al toque, ¿a cuántos de cada 10 les vuelves a escribir después?' },
+    { id: 'tipo_entrega', type: 'choice', options: [
+      { value: 'producto', label: 'Producto' },
+      { value: 'servicio', label: 'Servicio' },
+      { value: 'ambos', label: 'Ambos' },
+    ], prompt: '¿Tu negocio entrega principalmente un producto, un servicio, o ambos?' },
+    { id: 'tasa_asistencia', type: 'scale10', prompt: 'De cada 10 citas o reservas que agendas, ¿cuántas se presentan realmente?', showIf: function (a) { return a.tipo_entrega === 'servicio' || a.tipo_entrega === 'ambos'; } },
+    { id: 'tiene_recordatorio', type: 'choice', options: [
+      { value: 'automatico', label: 'Sí, automático' },
+      { value: 'manual_a_veces', label: 'Lo hago manual a veces' },
+      { value: 'nada', label: 'No tengo nada' },
+    ], prompt: '¿Tienes algo automático que le recuerde o confirme la cita al cliente antes del día?', showIf: function (a) { return a.tipo_entrega === 'servicio' || a.tipo_entrega === 'ambos'; } },
+    { id: 'tasa_upsell', type: 'scale10', prompt: 'De cada 10 clientes que te compran, ¿a cuántos les ofreces o vendes algo adicional en el momento?', showIf: function (a) { return a.tipo_entrega === 'producto' || a.tipo_entrega === 'ambos'; } },
+    { id: 'precio_adicional', type: 'number', min: 0, prompt: '¿Cuál es el precio promedio de ese producto o combo adicional? (S/)', showIf: function (a) { return a.tipo_entrega === 'producto' || a.tipo_entrega === 'ambos'; } },
+    { id: 'tiene_sistema_upsell', type: 'choice', options: [
+      { value: 'automatico', label: 'Sí, automático' },
+      { value: 'depende_persona', label: 'Depende de la persona que atienda' },
+      { value: 'nada', label: 'No tengo nada' },
+    ], prompt: '¿Tienes algún sistema automático para ofrecer eso, o depende de que alguien se acuerde?', showIf: function (a) { return a.tipo_entrega === 'producto' || a.tipo_entrega === 'ambos'; } },
+    { id: 'tasa_recompra', type: 'scale10', prompt: 'De cada 10 clientes que ya te compraron, ¿cuántos vuelven a comprarte?' },
+    { id: 'tiene_reactivacion', type: 'choice', options: [
+      { value: 'automatico', label: 'Sí, algo automático' },
+      { value: 'manual_a_veces', label: 'Lo hago manual a veces' },
+      { value: 'nada', label: 'No tengo nada, se van y ya' },
+    ], prompt: '¿Tienes algo para traer de vuelta a los clientes que dejaron de comprarte?' },
+  ];
+
+  var state = { step: 0, answers: {} };
+  var mount = null;
+
+  function visibleQuestions() {
+    return QUESTIONS.filter(function (q) {
+      return typeof q.showIf !== 'function' || q.showIf(state.answers);
+    });
+  }
+
+  function render() {
+    var visible = visibleQuestions();
+    var total = visible.length + 1; // +1 for the contact screen
+    var pct = Math.round((state.step / total) * 100);
+
+    var html = '<div class="quiz-progress"><div class="quiz-progress-bar" style="width:' + pct + '%"></div></div>';
+
+    if (state.step < visible.length) {
+      var q = visible[state.step];
+      html += '<div class="quiz-question">' + q.prompt + '</div>';
+
+      if (q.type === 'choice') {
+        html += '<div class="quiz-options">' + q.options.map(function (opt) {
+          var sel = state.answers[q.id] === opt.value ? ' selected' : '';
+          return '<button class="quiz-option' + sel + '" data-value="' + opt.value + '">' + opt.label + '</button>';
+        }).join('') + '</div>';
+      } else if (q.type === 'scale10') {
+        html += '<div class="quiz-scale">' + Array.from({ length: 11 }, function (_, n) { return n; }).map(function (n) {
+          var sel = state.answers[q.id] === n ? ' selected' : '';
+          return '<button class="' + sel.trim() + '" data-value="' + n + '">' + n + '</button>';
+        }).join('') + '</div>';
+      } else if (q.type === 'number' || q.type === 'number_or_unknown') {
+        var current = state.answers[q.id];
+        var val = (current === null || current === undefined) ? '' : current;
+        html += '<input class="quiz-input" type="number" min="0" id="quiz-number-input" value="' + val + '" placeholder="Escribe un número">';
+        if (q.type === 'number_or_unknown') {
+          var noSeSel = state.answers[q.id] === null ? ' selected' : '';
+          html += '<div class="quiz-options"><button class="quiz-option' + noSeSel + '" data-value="__unknown__">No lo sé</button></div>';
+        }
+      }
+
+      html += '<div class="quiz-nav">';
+      html += state.step > 0 ? '<button class="quiz-back" id="quiz-back">← Atrás</button>' : '<span></span>';
+      html += '<button class="quiz-next" id="quiz-next" disabled>Siguiente →</button>';
+      html += '</div><div class="quiz-error" id="quiz-error"></div>';
+    } else {
+      html += '<div class="quiz-question">Casi listo — ¿a dónde te envío tu auditoría?</div>';
+      html += '<input class="quiz-input" type="text" id="quiz-name" placeholder="Tu nombre" value="' + (state.contactName || '') + '">';
+      html += '<input class="quiz-input" type="text" id="quiz-whatsapp" placeholder="Tu WhatsApp (con código de país)" value="' + (state.contactWhatsapp || '') + '">';
+      html += '<input class="quiz-input" type="email" id="quiz-email" placeholder="Tu email" value="' + (state.contactEmail || '') + '">';
+      html += '<div class="quiz-nav"><button class="quiz-back" id="quiz-back">← Atrás</button><button class="quiz-next" id="quiz-submit">Ver mi auditoría →</button></div>';
+      html += '<div class="quiz-error" id="quiz-error"></div>';
+    }
+
+    mount.innerHTML = html;
+    wireEvents(visible);
+  }
+
+  function wireEvents(visible) {
+    var backBtn = document.getElementById('quiz-back');
+    if (backBtn) backBtn.addEventListener('click', function () { state.step -= 1; render(); });
+
+    if (state.step < visible.length) {
+      var q = visible[state.step];
+      var nextBtn = document.getElementById('quiz-next');
+
+      if (q.type === 'choice') {
+        document.querySelectorAll('.quiz-option').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            state.answers[q.id] = btn.getAttribute('data-value');
+            render();
+          });
+        });
+        nextBtn.disabled = state.answers[q.id] === undefined;
+      } else if (q.type === 'scale10') {
+        document.querySelectorAll('.quiz-scale button').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            state.answers[q.id] = Number(btn.getAttribute('data-value'));
+            render();
+          });
+        });
+        nextBtn.disabled = state.answers[q.id] === undefined;
+      } else if (q.type === 'number' || q.type === 'number_or_unknown') {
+        var input = document.getElementById('quiz-number-input');
+        input.addEventListener('input', function () {
+          state.answers[q.id] = input.value === '' ? undefined : Number(input.value);
+          nextBtn.disabled = state.answers[q.id] === undefined || isNaN(state.answers[q.id]);
+        });
+        var unknownBtn = document.querySelector('.quiz-option[data-value="__unknown__"]');
+        if (unknownBtn) {
+          unknownBtn.addEventListener('click', function () {
+            state.answers[q.id] = null;
+            render();
+          });
+        }
+        nextBtn.disabled = state.answers[q.id] === undefined;
+      }
+
+      nextBtn.addEventListener('click', function () {
+        state.step += 1;
+        render();
+      });
+    } else {
+      document.getElementById('quiz-submit').addEventListener('click', submitQuiz);
+    }
+  }
+
+  function submitQuiz() {
+    var name = document.getElementById('quiz-name').value.trim();
+    var whatsapp = document.getElementById('quiz-whatsapp').value.trim();
+    var email = document.getElementById('quiz-email').value.trim();
+    var errorEl = document.getElementById('quiz-error');
+
+    if (!name || !whatsapp || !email) {
+      errorEl.textContent = 'Completa los tres campos para continuar.';
+      return;
+    }
+
+    state.contactName = name;
+    state.contactWhatsapp = whatsapp;
+    state.contactEmail = email;
+    errorEl.textContent = '';
+    mount.innerHTML = '<div class="quiz-loading">Analizando tus respuestas…</div>';
+
+    fetch('/api/auditoria-gratuita/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, whatsapp: whatsapp, email: email, answers: state.answers }),
+    })
+      .then(function (res) { return res.json().then(function (body) { return { status: res.status, body: body }; }); })
+      .then(function (result) {
+        if (result.status !== 200) {
+          mount.innerHTML = '';
+          render();
+          document.getElementById('quiz-error').textContent = (result.body.errors || ['Algo salió mal, intenta de nuevo.']).join(' ');
+          return;
+        }
+        window.location.href = result.body.reportUrl;
+      })
+      .catch(function () {
+        mount.innerHTML = '';
+        render();
+        document.getElementById('quiz-error').textContent = 'No pudimos conectar con el servidor. Intenta de nuevo.';
+      });
+  }
+
+  window.startQuiz = function () {
+    mount = document.getElementById('auditoria');
+    if (!mount || mount.dataset.started) return;
+    mount.dataset.started = 'true';
+    state = { step: 0, answers: {} };
+    render();
+  };
+})();
 </script>
 
 </body>

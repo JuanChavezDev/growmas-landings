@@ -1,0 +1,14 @@
+{
+  "name": "growmas-landings",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0"
+  },
+  "scripts": {
+    "test": "node --test \"lib/**/*.test.js\" \"api/**/*.test.js\""
+  }
+}

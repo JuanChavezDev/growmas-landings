@@ -14,6 +14,7 @@
 - Slogan: "Sistemas Inteligentes para Hacer Crecer tu Negocio."
 - `growmas.io/auditoria-gratuita` must keep serving the exact existing `auditoria-gratuita/index.html` byte-for-byte — it's an externally-exported bundler artifact, never hand-edit its contents.
 - `diagnostico-de-fuga/` is deleted from the repo entirely.
+- **`api/auditoria-gratuita/*.js` and `lib/auditoria-gratuita/*.js` are a live, working Vercel Functions backend for the audit-quiz report (uses `@anthropic-ai/sdk`, tested with Node's built-in `node --test` runner). This code, the root `package.json`'s existing `"test"` script, its `@anthropic-ai/sdk` dependency, and `vercel.json`'s existing `rewrites`/`functions` entries for it must all keep working unmodified — no task in this plan touches `api/` or `lib/`.** `package.json` already exists (tracked in git, `name: "growmas-landings"`) — never run `npm init`; only add to it.
 - Every page needs unique `<title>`/meta description via `generateMetadata`, and `robots.ts` must explicitly allow GPTBot, ClaudeBot, PerplexityBot, and Google-Extended in addition to standard crawlers.
 - Naming style per project convention: `camelCase` for variables/functions, `PascalCase` for components, `kebab-case` for filenames. No `any` — use `unknown` if a type is genuinely unknown.
 - Services (fixed set, in this order, each with its slug):
@@ -26,15 +27,16 @@
 
 ### Task 1: Initialize the Next.js project for real
 
-The scaffold at the repo root has `next.config.ts`, `tailwind.config.ts`, `tsconfig.json`, `components.json`, `postcss.config.js`, and a `src/` tree, but **no `package.json`** — nothing has ever been installed or built. This task makes it a real, buildable Next.js app.
+The scaffold at the repo root has `next.config.ts`, `tailwind.config.ts`, `tsconfig.json`, `components.json`, `postcss.config.js`, and a `src/` tree, but nothing has ever been installed or built — running `next`/`tailwindcss` fails until dependencies exist. **A `package.json` already exists and is tracked in git** — it belongs to the separate `auditoria-gratuita` Vercel Functions backend (`@anthropic-ai/sdk` dependency, a `"test"` script running `node --test` over `lib/**/*.test.js` and `api/**/*.test.js`). This task adds the Next.js toolchain to that same `package.json` without disturbing what's already there, and fixes Tailwind's CSS import syntax.
 
 **Files:**
-- Create: `package.json`
+- Modify: `package.json` (add Next.js deps + new scripts; keep the existing `dependencies` and `"test"` script exactly as they are)
+- Create: `vitest.config.ts` (scoped to `src/`, so it never touches the existing `node --test` suite under `lib/`/`api/`)
 - Modify: `src/app/globals.css` (fix Tailwind v4 import syntax → v3 directives, matching the `tailwindcss@3.4` we install)
 - Modify: `.gitignore` (add `node_modules`, `.next` if not already covered)
 
 **Interfaces:**
-- Produces: a working `npm run dev`, `npm run build`, `npm run typecheck`, `npm run lint` per `CLAUDE.md`'s documented commands.
+- Produces: a working `npm run dev`, `npm run build`, `npm run typecheck`, `npm run lint`, `npm run test:site` (Vitest, scoped to `src/`) — all additive to the existing `npm test` (the untouched `node --test` suite for `api/`/`lib/`).
 
 - [ ] **Step 1: Check `.gitignore` covers `node_modules` and `.next`**
 
@@ -49,38 +51,47 @@ Thumbs.db
 .playwright-mcp
 ```
 
-- [ ] **Step 2: Create `package.json` with npm init**
+- [ ] **Step 2: Install dependencies into the existing `package.json`**
 
-Run:
-```bash
-npm init -y
-```
-
-Then edit the generated `package.json`'s `scripts` block to:
-
-```json
-{
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "typecheck": "tsc --noEmit",
-    "lint": "next lint",
-    "test": "vitest run"
-  },
-  "private": true
-}
-```
-
-- [ ] **Step 3: Install dependencies**
-
-Run:
+Run (this merges into the existing `package.json` — it does NOT overwrite `dependencies` or the existing `"test"` script):
 ```bash
 npm install next@16 react@19 react-dom@19
 npm install -D typescript@5 @types/node @types/react @types/react-dom tailwindcss@3 postcss autoprefixer eslint eslint-config-next vitest
 ```
 
-- [ ] **Step 4: Fix `globals.css` to Tailwind v3 syntax**
+- [ ] **Step 3: Add scripts to `package.json`, keeping everything already there**
+
+Edit `package.json`'s `scripts` block to ADD these entries alongside the existing `"test"` entry (do not remove or rename `"test"`):
+
+```json
+{
+  "scripts": {
+    "test": "node --test \"lib/**/*.test.js\" \"api/**/*.test.js\"",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint",
+    "test:site": "vitest run"
+  }
+}
+```
+
+- [ ] **Step 4: Create `vitest.config.ts` scoped to `src/`**
+
+This keeps Vitest from ever trying to collect the legacy `node --test`-style files under `lib/` and `api/` (which use `node:test`/`node:assert`, not Vitest's API):
+
+```ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    include: ['src/**/*.test.ts'],
+  },
+})
+```
+
+- [ ] **Step 5: Fix `globals.css` to Tailwind v3 syntax**
 
 The existing file uses the v4 `@import 'tailwindcss';` form, but the project pins Tailwind 3.4 and already ships a v3-style `tailwind.config.ts`. Replace `src/app/globals.css` content with:
 
@@ -100,8 +111,10 @@ Expected: build succeeds against the current placeholder `src/app/page.tsx` (the
 
 - [ ] **Step 6: Commit**
 
+`next.config.ts`, `tailwind.config.ts`, `tsconfig.json`, `components.json`, `postcss.config.js`, and `src/` are new to git (previously untracked scaffold files) — include them:
+
 ```bash
-git add package.json package-lock.json .gitignore src/app/globals.css
+git add package.json package-lock.json vitest.config.ts .gitignore src/ next.config.ts tailwind.config.ts tsconfig.json components.json postcss.config.js
 git commit -m "chore: initialize Next.js build toolchain"
 ```
 
@@ -1004,12 +1017,15 @@ git commit -m "feat: add sitemap.xml and robots.txt with LLM crawler allowlist"
 
 ### Task 9: Migrate existing landings and go live on the root
 
-This is the cutover task: move `auditoria-gratuita` under Next's static file serving, delete `diagnostico-de-fuga`, and simplify `vercel.json` now that Next owns routing.
+This is the cutover task: move `auditoria-gratuita` under Next's static file serving, delete `diagnostico-de-fuga`, and adjust `vercel.json`/`next.config.ts` now that Next owns routing at `/`.
+
+**Important:** Next.js's `public/` folder serves files only at their exact path (`public/auditoria-gratuita/index.html` is reachable at `/auditoria-gratuita/index.html`) — it does **not** auto-resolve a bare `/auditoria-gratuita` to that `index.html` the way a plain static host does. A `next.config.ts` rewrite is required to keep `/auditoria-gratuita` working with no trailing filename. `vercel.json` already has a real, working rewrite (`/auditoria-gratuita/reporte` → `/api/auditoria-gratuita/reporte`) and a `functions` entry for `api/auditoria-gratuita/submit.js` — per Global Constraints, these must survive; only the now-obsolete `/` → `diagnostico-de-fuga/index.html` rewrite and the `"framework": null` line (which was forcing static-only handling) are removed.
 
 **Files:**
 - Move: `auditoria-gratuita/index.html` → `public/auditoria-gratuita/index.html`
 - Delete: `diagnostico-de-fuga/` (entire directory)
-- Modify: `vercel.json`
+- Modify: `vercel.json` (drop the `/` rewrite and `"framework": null`; keep the `/auditoria-gratuita/reporte` rewrite and `functions` entry)
+- Modify: `next.config.ts` (add a rewrite so `/auditoria-gratuita` resolves to the static `index.html`)
 - Modify: `.vercelignore` (stop excluding the Next.js app files, since they're now the real deploy)
 
 **Interfaces:**
@@ -1036,19 +1052,60 @@ Expected: shows as a rename with 0 content changes (or an add with identical byt
 git rm -r diagnostico-de-fuga
 ```
 
-- [ ] **Step 3: Simplify `vercel.json`**
+- [ ] **Step 3: Update `vercel.json` — drop the obsolete `/` rewrite and `framework: null`, keep everything else**
 
-Replace `vercel.json` content (no more manual rewrite needed — Next.js owns `/` directly now):
-
+Current content (verify it matches before editing):
 ```json
-{}
+{
+  "framework": null,
+  "rewrites": [
+    { "source": "/", "destination": "/diagnostico-de-fuga/index.html" },
+    { "source": "/auditoria-gratuita/reporte", "destination": "/api/auditoria-gratuita/reporte" }
+  ],
+  "functions": {
+    "api/auditoria-gratuita/submit.js": { "maxDuration": 60 }
+  }
+}
 ```
 
-- [ ] **Step 4: Update `.vercelignore` to stop excluding the Next.js app**
+Replace with:
+```json
+{
+  "rewrites": [
+    { "source": "/auditoria-gratuita/reporte", "destination": "/api/auditoria-gratuita/reporte" }
+  ],
+  "functions": {
+    "api/auditoria-gratuita/submit.js": { "maxDuration": 60 }
+  }
+}
+```
 
-Read the current `.vercelignore` and remove the lines that exclude `.claude/`, `package.json`, `src/`, `next.config.ts`, `tailwind.config.ts`, `tsconfig.json`, `postcss.config.js`, `components.json` (whichever of these are present) — these are now the actual deployed application, not a leftover scaffold. Keep any lines unrelated to the Next.js app (e.g. `.env.local.example` if listed, `docs/`, `.mcp.json`).
+- [ ] **Step 4: Add a rewrite in `next.config.ts` so `/auditoria-gratuita` serves the static page**
 
-- [ ] **Step 5: Full verification build**
+Modify `next.config.ts` to add `rewrites()`:
+
+```ts
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  experimental: {
+    mcpServer: true,
+  },
+  async rewrites() {
+    return [
+      { source: '/auditoria-gratuita', destination: '/auditoria-gratuita/index.html' },
+    ]
+  },
+}
+
+export default nextConfig
+```
+
+- [ ] **Step 5: Update `.vercelignore` to stop excluding the Next.js app**
+
+Read the current `.vercelignore` and remove the lines that exclude `.claude/`, `src/`, `next.config.ts`, `tailwind.config.ts`, `tsconfig.json`, `postcss.config.js`, `components.json` (whichever of these are present) — these are now the actual deployed application, not a leftover scaffold. `api/**/*.test.js` should stay excluded (test files, not deployed functions). Keep any lines unrelated to the Next.js app (e.g. `.env.local.example` if listed, `.mcp.json`, `CLAUDE.md`, `GEMINI.md`, `README.md`).
+
+- [ ] **Step 6: Full verification build**
 
 ```bash
 npm run build
@@ -1064,16 +1121,17 @@ kill %1
 ```
 Expected: all six return `200`.
 
-- [ ] **Step 6: Run the full test suite and typecheck one last time**
+- [ ] **Step 7: Run the full test suite and typecheck one last time**
 
 ```bash
 npm run typecheck
-npx vitest run
+npm run test:site
+npm test
 npm run build
 ```
-Expected: all three succeed with no errors.
+Expected: all four succeed with no errors — `npm run test:site` (Vitest, `src/`) and `npm test` (the pre-existing `node --test` suite over `api/`/`lib/`) both stay green.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add -A

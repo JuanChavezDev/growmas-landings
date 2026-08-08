@@ -1,4 +1,5 @@
 {
+  "framework": "nextjs",
   "rewrites": [
     { "source": "/auditoria-gratuita/reporte", "destination": "/api/auditoria-gratuita/reporte" }
   ],

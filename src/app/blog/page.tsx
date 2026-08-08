@@ -13,11 +13,14 @@ export default function BlogIndexPage() {
       <h1 className="text-4xl font-bold">Blog</h1>
       <ul className="mt-12 space-y-8">
         {posts.map((post) => (
-          <li key={post.slug}>
-            <Link href={`/blog/${post.slug}`} className="text-xl font-semibold underline">
+          <li key={post.slug} className="border-b border-berenjena pb-8">
+            <Link
+              href={`/blog/${post.slug}`}
+              className="text-xl font-semibold text-hueso underline decoration-violeta hover:text-lila"
+            >
               {post.question}
             </Link>
-            <p className="mt-2 text-neutral-600">{post.directAnswer}</p>
+            <p className="mt-2 text-niebla">{post.directAnswer}</p>
           </li>
         ))}
       </ul>

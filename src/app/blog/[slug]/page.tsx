@@ -41,8 +41,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <h1 className="text-4xl font-bold">{post.question}</h1>
-      <p className="mt-6 text-lg font-medium text-neutral-800">{post.directAnswer}</p>
-      <p className="mt-6 text-neutral-600">{post.body}</p>
+      <p className="mt-6 text-lg font-medium text-lila">{post.directAnswer}</p>
+      <p className="mt-6 text-niebla">{post.body}</p>
     </main>
   )
 }

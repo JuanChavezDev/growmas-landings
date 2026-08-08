@@ -41,16 +41,16 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <h1 className="text-4xl font-bold">{service.name}</h1>
-      <p className="mt-4 text-lg text-neutral-600">{service.summary}</p>
-      <p className="mt-6 text-neutral-600">{service.body}</p>
+      <p className="mt-4 text-lg text-niebla">{service.summary}</p>
+      <p className="mt-6 text-niebla">{service.body}</p>
       <Link
         href="/auditoria-gratuita"
-        className="mt-8 inline-block rounded-md bg-black px-6 py-3 text-white"
+        className="mt-8 inline-block rounded-md bg-brand-gradient px-6 py-3 font-medium text-onix"
       >
         Agenda una Auditoría Grow+
       </Link>
       <p className="mt-12">
-        <Link href="/servicios" className="underline">
+        <Link href="/servicios" className="text-lila underline">
           Ver todos los sistemas
         </Link>
       </p>

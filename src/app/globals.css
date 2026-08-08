@@ -2,7 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
- * Personaliza tu tema aquí
- * Documentación: https://tailwindcss.com/docs/theme
- */
+body {
+  background-color: #08070d;
+  color: #f2f0f5;
+}
+
+::selection {
+  background-color: #b45cff;
+  color: #08070d;
+}
+
+.text-gradient {
+  background-image: linear-gradient(90deg, #b45cff, #e07bc0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}

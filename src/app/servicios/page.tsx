@@ -16,9 +16,13 @@ export default function ServiciosPage() {
       </h1>
       <div className="mt-12 grid gap-8 sm:grid-cols-2">
         {services.map((service) => (
-          <Link key={service.slug} href={`/servicios/${service.slug}`} className="block">
-            <h2 className="text-xl font-semibold">{service.name}</h2>
-            <p className="mt-2 text-neutral-600">{service.summary}</p>
+          <Link
+            key={service.slug}
+            href={`/servicios/${service.slug}`}
+            className="block rounded-lg border border-berenjena p-6 transition hover:border-violeta"
+          >
+            <h2 className="text-xl font-semibold text-hueso">{service.name}</h2>
+            <p className="mt-2 text-niebla">{service.summary}</p>
           </Link>
         ))}
       </div>

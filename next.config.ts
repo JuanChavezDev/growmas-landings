@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   experimental: {
     mcpServer: true,
   },
+  async rewrites() {
+    return [
+      { source: '/auditoria-gratuita', destination: '/auditoria-gratuita/index.html' },
+    ]
+  },
 }
 
 export default nextConfig

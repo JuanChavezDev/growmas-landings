@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { organizationSchema } from '@/lib/seo/schema'
 import { siteConfig } from '@/lib/seo/site-config'
+import { SiteFooter } from '@/components/site-footer'
+import { SiteHeader } from '@/components/site-header'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -34,7 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema()) }}
         />
+        <SiteHeader />
         {children}
+        <SiteFooter />
       </body>
     </html>
   )

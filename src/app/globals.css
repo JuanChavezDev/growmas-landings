@@ -18,3 +18,35 @@ body {
   -webkit-background-clip: text;
   color: transparent;
 }
+
+@keyframes travel-cycle {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes pulse-node {
+  0%,
+  82%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(180, 92, 255, 0);
+  }
+  8% {
+    transform: scale(1.6);
+    box-shadow: 0 0 14px 4px rgba(180, 92, 255, 0.7);
+  }
+}
+
+@keyframes float-card {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

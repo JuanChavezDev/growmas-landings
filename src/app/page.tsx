@@ -9,7 +9,9 @@ import {
   UserPlus,
 } from 'lucide-react'
 import { siteConfig } from '@/lib/seo/site-config'
+import { ChatMockup } from '@/components/chat-mockup'
 import { CycleDiagram } from '@/components/cycle-diagram'
+import { PipelineMockup } from '@/components/pipeline-mockup'
 
 export const metadata: Metadata = {
   title: siteConfig.slogan,
@@ -62,7 +64,7 @@ export default function HomePage() {
   return (
     <main>
       <section className="relative overflow-hidden px-6 pb-24 pt-20 sm:pt-28">
-        <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-violeta/15 blur-[140px]" />
+        <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 animate-[glow-pulse_7s_ease-in-out_infinite] rounded-full bg-violeta/15 blur-[140px]" />
         <div className="relative mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-magenta">
@@ -100,27 +102,35 @@ export default function HomePage() {
       </section>
 
       <section className="border-y border-berenjena/60 bg-noche/60 px-6 py-20">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-bold">
-            Tu negocio no necesita más herramientas.
-            <br />
-            Necesita un sistema.
-          </h2>
-          <p className="mt-4 max-w-2xl text-niebla">
-            La mayoría de negocios pierde oportunidades todos los días porque sus procesos no están
-            preparados para crecer:
-          </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            {painPoints.map((point) => (
-              <div key={point} className="flex items-start gap-3 rounded-lg border border-berenjena bg-onix/60 p-4">
-                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-magenta" />
-                <span className="text-hueso">{point}</span>
-              </div>
-            ))}
+        <div className="mx-auto grid max-w-5xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <h2 className="text-3xl font-bold">
+              Tu negocio no necesita más herramientas.
+              <br />
+              Necesita un sistema.
+            </h2>
+            <p className="mt-4 max-w-2xl text-niebla">
+              La mayoría de negocios pierde oportunidades todos los días porque sus procesos no
+              están preparados para crecer:
+            </p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {painPoints.map((point) => (
+                <div
+                  key={point}
+                  className="flex items-start gap-3 rounded-lg border border-berenjena bg-onix/60 p-4"
+                >
+                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-magenta" />
+                  <span className="text-hueso">{point}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-8 text-lg text-hueso">
+              En {siteConfig.name} diseñamos sistemas para resolver esos problemas.
+            </p>
           </div>
-          <p className="mt-8 text-lg text-hueso">
-            En {siteConfig.name} diseñamos sistemas para resolver esos problemas.
-          </p>
+          <div className="flex justify-center">
+            <ChatMockup />
+          </div>
         </div>
       </section>
 
@@ -131,6 +141,9 @@ export default function HomePage() {
             <br />
             Creamos sistemas que ayudan a tu negocio a crecer.
           </h2>
+          <div className="mt-10">
+            <PipelineMockup />
+          </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-2">
             {services.map((service) => (
               <Link
@@ -178,7 +191,7 @@ export default function HomePage() {
       </section>
 
       <section className="relative overflow-hidden border-t border-berenjena px-6 py-24">
-        <div className="pointer-events-none absolute -bottom-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-magenta/10 blur-[140px]" />
+        <div className="pointer-events-none absolute -bottom-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 animate-[glow-pulse_8s_ease-in-out_infinite] rounded-full bg-magenta/10 blur-[140px]" />
         <div className="relative mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold">
             Descubre dónde está el siguiente nivel de crecimiento de tu negocio.

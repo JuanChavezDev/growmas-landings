@@ -50,3 +50,47 @@ body {
     transform: translateY(-10px);
   }
 }
+
+@keyframes typing-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes chip-move {
+  0%,
+  15% {
+    left: 6%;
+  }
+  30%,
+  45% {
+    left: 31%;
+  }
+  60%,
+  75% {
+    left: 56%;
+  }
+  90%,
+  100% {
+    left: 81%;
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}

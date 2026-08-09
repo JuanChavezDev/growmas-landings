@@ -65,12 +65,17 @@ export default function HomePage() {
         <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-violeta/15 blur-[140px]" />
         <div className="relative mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2">
           <div>
-            <h1 className="text-4xl font-bold leading-[1.1] sm:text-5xl">
-              Haz crecer tu negocio con <span className="text-gradient">sistemas inteligentes</span>.
+            <p className="text-sm font-medium uppercase tracking-wide text-magenta">
+              La mayoría de negocios solo piensa en cómo atraer más gente.
+            </p>
+            <h1 className="mt-3 text-4xl font-bold leading-[1.1] sm:text-5xl">
+              Haz crecer tu negocio con <span className="text-gradient">sistemas inteligentes</span> en
+              cada etapa de tu Ciclo de Valor.
             </h1>
             <p className="mt-6 text-lg text-niebla">
-              Diseñamos e implementamos sistemas inteligentes que ayudan a los negocios de servicios a
-              atraer más oportunidades, mejorar la atención y aumentar el valor de cada cliente.
+              La mayoría solo se enfoca en traer más tráfico. Nosotros trabajamos justo donde más
+              dinero se pierde: desde que el lead llega, en Conversión, Operación, Relación y
+              Crecimiento.
             </p>
             <Link
               href="/auditoria-gratuita"
@@ -144,11 +149,16 @@ export default function HomePage() {
 
       <section className="border-y border-berenjena/60 bg-noche/60 px-6 py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-bold">Nuestra filosofía</h2>
+          <h2 className="text-3xl font-bold">
+            No hacemos que lleguen más personas.
+            <br />
+            Hacemos que las que ya llegan no se pierdan.
+          </h2>
           <p className="mt-4 text-lg text-niebla">
-            No creemos que el crecimiento dependa únicamente de conseguir más clientes. Creemos que
-            un negocio crece cuando cada cliente recibe una mejor atención, una mejor experiencia y
-            genera más valor con el tiempo. Ese es el propósito del Sistema MAS.
+            Tu Ciclo de Valor tiene 5 etapas: Atracción, Conversión, Operación, Relación y
+            Crecimiento. Nuestro trabajo empieza justo cuando el lead llega: ahí diseñamos los
+            sistemas inteligentes que evitan que se pierda, etapa por etapa, hasta que se convierte
+            en un cliente que vuelve. Esa es la metodología <strong className="text-hueso">Sistema MAS</strong>.
           </p>
         </div>
       </section>

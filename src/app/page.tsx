@@ -11,7 +11,9 @@ import {
 import { siteConfig } from '@/lib/seo/site-config'
 import { ChatMockup } from '@/components/chat-mockup'
 import { CycleDiagram } from '@/components/cycle-diagram'
+import { HeroWaves } from '@/components/hero-waves'
 import { PipelineMockup } from '@/components/pipeline-mockup'
+import { RadarIcon } from '@/components/radar-icon'
 
 export const metadata: Metadata = {
   title: siteConfig.slogan,
@@ -64,6 +66,7 @@ export default function HomePage() {
   return (
     <main>
       <section className="relative overflow-hidden px-6 pb-24 pt-20 sm:pt-28">
+        <HeroWaves />
         <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 animate-[glow-pulse_7s_ease-in-out_infinite] rounded-full bg-violeta/15 blur-[140px]" />
         <div className="relative mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2">
           <div>
@@ -149,9 +152,9 @@ export default function HomePage() {
               <Link
                 key={service.slug}
                 href={`/servicios/${service.slug}`}
-                className="group block rounded-xl border border-berenjena bg-noche/50 p-6 transition hover:border-violeta hover:bg-noche"
+                className="group block overflow-hidden rounded-xl border border-berenjena bg-noche/50 bg-dot-grid p-6 transition hover:border-violeta hover:bg-noche"
               >
-                <service.icon className="h-8 w-8 text-violeta transition group-hover:text-magenta" />
+                <RadarIcon icon={service.icon} />
                 <h3 className="mt-4 text-lg font-semibold text-hueso">{service.name}</h3>
                 <p className="mt-2 text-niebla">{service.description}</p>
               </Link>

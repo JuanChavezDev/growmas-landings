@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Auditoría gratuita · Growmas — Descubre cuánto dinero está perdiendo tu negocio</title>
-<meta name="description" content="Auditoría gratuita y personalizada de tu negocio: descubre cuántos clientes se te están yendo sin que lo notes y cuánto podrías recuperar cada mes, sin gastar más en publicidad.">
+<title>Calculadora de Pacientes Perdidos · Growmas — ¿Cuántos pacientes está perdiendo tu clínica?</title>
+<meta name="description" content="Descubre cuántos pacientes se te están yendo cada mes y cuánto dinero representa — con una calculadora gratuita de 3 minutos, hecha para clínicas y consultorios.">
 <meta name="theme-color" content="#0A0A0F">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Auditoría gratuita · Growmas — ¿Cuánto dinero está perdiendo tu negocio?">
-<meta property="og:description" content="Te muestro exactamente cuánto se te está yendo en clientes que no vuelven, y qué puedes hacer para recuperarlo — sin gastar un sol más en publicidad.">
+<meta property="og:title" content="Calculadora de Pacientes Perdidos · Growmas">
+<meta property="og:description" content="Te muestro exactamente cuántos pacientes se te están yendo cada mes y qué puedes hacer para recuperarlos — sin gastar un sol más en publicidad.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -44,6 +44,8 @@
   .bg-grid { position:fixed; inset:0; background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px); background-size:34px 34px; opacity:.5; pointer-events:none; z-index:0; }
 
   section.hero { position:relative; z-index:1; padding:clamp(48px,9vw,96px) clamp(20px,5vw,48px) 0; max-width:820px; margin:0 auto; text-align:center; }
+  .vsl-video-wrap { max-width:720px; margin:36px auto 28px; border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 60px rgba(0,0,0,.5); background:#111118; }
+  .vsl-video-wrap video { display:block; width:100%; aspect-ratio:16/9; background:#000; }
   section.discover { position:relative; z-index:1; padding:clamp(40px,7vw,72px) clamp(20px,5vw,48px) clamp(64px,9vw,100px); max-width:820px; margin:0 auto; text-align:center; }
   .blob-a { position:absolute; top:-60px; right:-120px; width:420px; height:420px; background:linear-gradient(135deg,#6D28D9,#A855F7,#D946EF,#F97316); filter:blur(90px); opacity:.32; animation:blobMorph 12s ease-in-out infinite, floatY 9s ease-in-out infinite; z-index:-1; }
   .blob-b { position:absolute; bottom:-40px; left:-100px; width:300px; height:300px; background:linear-gradient(135deg,#3B82F6,#06B6D4); filter:blur(80px); opacity:.22; animation:blobMorph 15s ease-in-out infinite reverse, floatY2 11s ease-in-out infinite; z-index:-1; }
@@ -153,19 +155,30 @@
 
   <div class="eyebrow reveal d1">
     <span class="dot"></span>
-    <span>Auditoría gratuita</span>
+    <span>Calculadora gratuita para clínicas</span>
   </div>
 
-  <h1 class="reveal d2">Estás perdiendo clientes todos los meses — y <span class="grad">no lo sabes</span>, porque nadie te lo está midiendo.</h1>
+  <h1 class="reveal d2">Tu clínica está perdiendo pacientes todos los meses — y <span class="grad">no lo sabes</span>, porque nadie te lo está midiendo.</h1>
 
-  <p class="lede reveal d3">Te hago una auditoría gratuita y personalizada de tu negocio para mostrarte exactamente cuánto dinero se te está yendo en clientes que no vuelven, y qué puedes hacer para recuperarlo — sin gastar un sol más en publicidad.</p>
+  <p class="lede reveal d3">Mira este video de 3 minutos y luego calcula, con tus propios números, cuántos pacientes se te están yendo y cuánto dinero representa — sin gastar un sol más en publicidad.</p>
+
+  <div class="vsl-video-wrap reveal d4">
+    <video controls preload="metadata" poster="/mas-pacientes/vsl-poster.jpg">
+      <source src="/mas-pacientes/vsl.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="reveal d5">
+    <button class="cta-btn" id="start-audit-video" type="button">Calcular cuánto estoy perdiendo →</button>
+    <p class="cta-sub">Toma menos de 3 minutos. Es gratis, sin compromiso.</p>
+  </div>
 </section>
 
 <section class="cycle">
   <div class="cycle-grid">
   <div class="cycle-head">
-    <h2 class="cycle-kicker reveal d4">Así funciona todo negocio, paso a paso —<br><span class="grad">y así es exactamente por dónde se te está escapando el dinero cada mes.</span></h2>
-    <p class="cycle-sub reveal d4">Son 5 etapas por las que pasa cada cliente. Tu auditoría revisa las 5 para encontrar exactamente en cuál se te está escapando el dinero.</p>
+    <h2 class="cycle-kicker reveal d4">Así funciona toda clínica, paso a paso —<br><span class="grad">y así es exactamente por dónde se te está escapando el dinero cada mes.</span></h2>
+    <p class="cycle-sub reveal d4">Son 5 etapas por las que pasa cada paciente. La calculadora revisa las 5 para encontrar exactamente en cuál se te está escapando el dinero.</p>
   </div>
 
   <div id="hero-diagram" class="reveal d5">
@@ -194,27 +207,27 @@
 
   <div class="cycle-note reveal d6">
     <span class="ico">📊</span>
-    <p>Según estadísticas del sector, <strong>el 95% de los negocios no tiene un sistema de fidelización activo</strong> — por eso la etapa 5 suele ser donde más dinero se escapa. Pero eso no significa que las otras 4 etapas estén libres de pérdidas. Tu auditoría revisa las 5, no solo la más común.</p>
+    <p>Según estadísticas del sector, <strong>el 95% de las clínicas no tiene un sistema de fidelización activo</strong> — por eso la etapa 5 suele ser donde más dinero se escapa. Pero eso no significa que las otras 4 etapas estén libres de pérdidas. La calculadora revisa las 5, no solo la más común.</p>
   </div>
 </section>
 
 <section class="discover">
   <div class="reveal d1">
-    <p class="discover-label">En tu auditoría vas a descubrir:</p>
+    <p class="discover-label">Con la calculadora vas a descubrir:</p>
     <ul class="discover-list">
-      <li><span class="ico">🔁</span><span>Cuántos clientes se te están yendo sin que lo notes.</span></li>
-      <li><span class="ico">⚠️</span><span>Qué tan expuesto está tu negocio a una mala reseña sin filtro.</span></li>
+      <li><span class="ico">🔁</span><span>Cuántos pacientes se te están yendo sin que lo notes.</span></li>
+      <li><span class="ico">⚠️</span><span>Qué tan expuesta está tu clínica a una mala reseña sin filtro.</span></li>
       <li><span class="ico">💰</span><span>Cuánto podrías estar recuperando cada mes, sin gastar más en publicidad.</span></li>
     </ul>
   </div>
 
   <div class="honesty reveal d2">
     <div class="h-label"><span class="ico">🎯</span><span class="txt">Antes de completar tus datos</span></div>
-    <p>Esta no es una plantilla genérica — es trabajo real sobre tu negocio. <strong>Entre más sincero seas en tus respuestas, más útil te va a ser lo que te muestre.</strong> Esto es para que veas el estado real de tu negocio, no para quedar bien contigo.</p>
+    <p>Esta no es una plantilla genérica — es trabajo real sobre tu clínica. <strong>Entre más sincero seas en tus respuestas, más útil te va a ser lo que te muestre.</strong> Esto es para que veas el estado real de tu clínica, no para quedar bien contigo.</p>
   </div>
 
   <div class="reveal d3">
-    <button class="cta-btn" id="start-audit" type="button">Empezar mi auditoría gratuita →</button>
+    <button class="cta-btn" id="start-audit" type="button">Calcular cuánto estoy perdiendo →</button>
     <p class="cta-sub">Toma menos de 3 minutos. Es gratis, sin compromiso.</p>
   </div>
 
@@ -229,24 +242,28 @@
     else nav.classList.remove('scrolled');
   }, { passive:true });
 
-  document.getElementById('start-audit').addEventListener('click', function () {
+  function goToQuiz() {
     var target = document.getElementById('auditoria');
     if (target) target.scrollIntoView({ behavior:'smooth', block:'start' });
     startQuiz();
-  });
+  }
+
+  document.getElementById('start-audit').addEventListener('click', goToQuiz);
+  var videoCta = document.getElementById('start-audit-video');
+  if (videoCta) videoCta.addEventListener('click', goToQuiz);
 </script>
 
 <script>
 (function () {
   var QUESTIONS = [
-    { id: 'clientes_mes', type: 'number', min: 0, prompt: '¿Cuántos clientes atiendes o cierras al mes?' },
-    { id: 'ticket_promedio', type: 'number', min: 0, prompt: '¿Cuál es tu ticket promedio por venta/cliente? (S/)' },
+    { id: 'clientes_mes', type: 'number', min: 0, prompt: '¿Cuántos pacientes atiendes al mes?' },
+    { id: 'ticket_promedio', type: 'number', min: 0, prompt: '¿Cuál es tu ticket promedio por consulta/paciente? (S/)' },
     { id: 'canal_adquisicion', type: 'choice', options: [
       { value: 'redes_organico', label: 'Redes sociales (orgánico)' },
       { value: 'recomendaciones', label: 'Recomendaciones' },
       { value: 'publicidad_paga', label: 'Publicidad paga' },
       { value: 'no_lo_se', label: 'No tengo claro de dónde vienen' },
-    ], prompt: '¿De dónde viene la mayoría de tus clientes nuevos?' },
+    ], prompt: '¿De dónde viene la mayoría de tus pacientes nuevos?' },
     { id: 'leads_mes', type: 'number_or_unknown', min: 0, prompt: '¿Cuántos leads o contactos nuevos te escribieron el mes pasado?' },
     { id: 'tiempo_respuesta', type: 'choice', options: [
       { value: 'minutos', label: 'En minutos' },
@@ -254,40 +271,28 @@
       { value: 'dia_siguiente', label: 'Al día siguiente' },
       { value: 'a_veces_mas_de_un_dia', label: 'A veces se me pasa más de un día' },
     ], prompt: 'Cuando alguien te escribe, ¿en cuánto tiempo respondes en promedio?' },
-    { id: 'tasa_cierre', type: 'scale10', prompt: 'De cada 10 que preguntan, ¿cuántos terminan comprando?' },
+    { id: 'tasa_cierre', type: 'scale10', prompt: 'De cada 10 que preguntan, ¿cuántos terminan agendando su cita?' },
     { id: 'hace_seguimiento', type: 'choice', options: [
       { value: 'tengo_proceso', label: 'Tengo un proceso de seguimiento' },
       { value: 'a_veces', label: 'A veces, si me acuerdo' },
       { value: 'casi_nunca', label: 'Casi nunca vuelvo a escribirle' },
-    ], prompt: 'Cuando alguien muestra interés pero no compra al toque, ¿le haces seguimiento?' },
-    { id: 'tasa_seguimiento', type: 'scale10', prompt: 'De esos que no compran al toque, ¿a cuántos de cada 10 les vuelves a escribir después?' },
-    { id: 'tipo_entrega', type: 'choice', options: [
-      { value: 'producto', label: 'Producto' },
-      { value: 'servicio', label: 'Servicio' },
-      { value: 'ambos', label: 'Ambos' },
-    ], prompt: '¿Tu negocio entrega principalmente un producto, un servicio, o ambos?' },
-    { id: 'tasa_asistencia', type: 'scale10', prompt: 'De cada 10 citas o reservas que agendas, ¿cuántas se presentan realmente?', showIf: function (a) { return a.tipo_entrega === 'servicio' || a.tipo_entrega === 'ambos'; } },
+    ], prompt: 'Cuando alguien muestra interés pero no agenda al toque, ¿le haces seguimiento?' },
+    { id: 'tasa_seguimiento', type: 'scale10', prompt: 'De esos que no agendan al toque, ¿a cuántos de cada 10 les vuelves a escribir después?' },
+    { id: 'tasa_asistencia', type: 'scale10', prompt: 'De cada 10 citas o reservas que agendas, ¿cuántas se presentan realmente?' },
     { id: 'tiene_recordatorio', type: 'choice', options: [
       { value: 'automatico', label: 'Sí, automático' },
       { value: 'manual_a_veces', label: 'Lo hago manual a veces' },
       { value: 'nada', label: 'No tengo nada' },
-    ], prompt: '¿Tienes algo automático que le recuerde o confirme la cita al cliente antes del día?', showIf: function (a) { return a.tipo_entrega === 'servicio' || a.tipo_entrega === 'ambos'; } },
-    { id: 'tasa_upsell', type: 'scale10', prompt: 'De cada 10 clientes que te compran, ¿a cuántos les ofreces o vendes algo adicional en el momento?', showIf: function (a) { return a.tipo_entrega === 'producto' || a.tipo_entrega === 'ambos'; } },
-    { id: 'precio_adicional', type: 'number', min: 0, prompt: '¿Cuál es el precio promedio de ese producto o combo adicional? (S/)', showIf: function (a) { return a.tipo_entrega === 'producto' || a.tipo_entrega === 'ambos'; } },
-    { id: 'tiene_sistema_upsell', type: 'choice', options: [
-      { value: 'automatico', label: 'Sí, automático' },
-      { value: 'depende_persona', label: 'Depende de la persona que atienda' },
-      { value: 'nada', label: 'No tengo nada' },
-    ], prompt: '¿Tienes algún sistema automático para ofrecer eso, o depende de que alguien se acuerde?', showIf: function (a) { return a.tipo_entrega === 'producto' || a.tipo_entrega === 'ambos'; } },
-    { id: 'tasa_recompra', type: 'scale10', prompt: 'De cada 10 clientes que ya te compraron, ¿cuántos vuelven a comprarte?' },
+    ], prompt: '¿Tienes algo automático que le recuerde o confirme la cita al paciente antes del día?' },
+    { id: 'tasa_recompra', type: 'scale10', prompt: 'De cada 10 pacientes que ya se atendieron contigo, ¿cuántos vuelven a atenderse?' },
     { id: 'tiene_reactivacion', type: 'choice', options: [
       { value: 'automatico', label: 'Sí, algo automático' },
       { value: 'manual_a_veces', label: 'Lo hago manual a veces' },
       { value: 'nada', label: 'No tengo nada, se van y ya' },
-    ], prompt: '¿Tienes algo para traer de vuelta a los clientes que dejaron de comprarte?' },
+    ], prompt: '¿Tienes algo para traer de vuelta a los pacientes que dejaron de venir?' },
   ];
 
-  var state = { step: 0, answers: {} };
+  var state = { step: 0, answers: { tipo_entrega: 'servicio' } };
   var mount = null;
 
   function visibleQuestions() {
@@ -332,11 +337,11 @@
       html += '<button class="quiz-next" id="quiz-next" disabled>Siguiente →</button>';
       html += '</div><div class="quiz-error" id="quiz-error"></div>';
     } else {
-      html += '<div class="quiz-question">Casi listo — ¿a dónde te envío tu auditoría?</div>';
+      html += '<div class="quiz-question">Casi listo — ¿a dónde te envío tus resultados?</div>';
       html += '<input class="quiz-input" type="text" id="quiz-name" placeholder="Tu nombre" value="' + (state.contactName || '') + '">';
       html += '<input class="quiz-input" type="text" id="quiz-whatsapp" placeholder="Tu WhatsApp (con código de país)" value="' + (state.contactWhatsapp || '') + '">';
       html += '<input class="quiz-input" type="email" id="quiz-email" placeholder="Tu email" value="' + (state.contactEmail || '') + '">';
-      html += '<div class="quiz-nav"><button class="quiz-back" id="quiz-back">← Atrás</button><button class="quiz-next" id="quiz-submit">Ver mi auditoría →</button></div>';
+      html += '<div class="quiz-nav"><button class="quiz-back" id="quiz-back">← Atrás</button><button class="quiz-next" id="quiz-submit">Ver mis resultados →</button></div>';
       html += '<div class="quiz-error" id="quiz-error"></div>';
     }
 
@@ -436,7 +441,7 @@
     mount = document.getElementById('auditoria');
     if (!mount || mount.dataset.started) return;
     mount.dataset.started = 'true';
-    state = { step: 0, answers: {} };
+    state = { step: 0, answers: { tipo_entrega: 'servicio' } };
     render();
   };
 })();

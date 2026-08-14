@@ -47,7 +47,7 @@ function createSubmitHandler(overrides) {
     const report = await generateNarrative(deps.anthropicClient, name, metrics);
 
     const encoded = encodeReportData({ name, metrics, report });
-    const reportUrl = `${deps.siteUrl}/auditoria-gratuita/reporte?d=${encoded}`;
+    const reportUrl = `${deps.siteUrl}/mas-pacientes/reporte?d=${encoded}`;
 
     try {
       await deps.sendReportEmail({ apiKey: deps.resendApiKey, to: email, name, reportUrl });

@@ -44,7 +44,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       <p className="mt-4 text-lg text-niebla">{service.summary}</p>
       <p className="mt-6 text-niebla">{service.body}</p>
       <Link
-        href="/auditoria-gratuita"
+        href="/mas-pacientes"
         className="mt-8 inline-block rounded-md bg-brand-gradient px-6 py-3 font-medium text-onix"
       >
         Agenda una Auditoría Grow+

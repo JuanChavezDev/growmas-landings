@@ -4,9 +4,9 @@ const { decodeReportData } = require('../../lib/auditoria-gratuita/report-codec'
 const { renderReportHtml, escapeHtml } = require('../../lib/auditoria-gratuita/report-template');
 
 const NOT_FOUND_HTML = `<!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8"><title>Auditoría no encontrada</title></head>
+<html lang="es"><head><meta charset="utf-8"><title>Resultados no encontrados</title></head>
 <body style="background:#0A0A0F;color:#fff;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:24px;">
-<div><h1>No encontramos esta auditoría</h1><p><a href="/auditoria-gratuita" style="color:#A855F7;">Empezar una nueva auditoría gratuita</a></p></div>
+<div><h1>No encontramos estos resultados</h1><p><a href="/mas-pacientes" style="color:#A855F7;">Calcular cuánto estoy perdiendo</a></p></div>
 </body></html>`;
 
 function createReporteHandler(overrides) {
@@ -36,7 +36,7 @@ function createReporteHandler(overrides) {
     }
 
     const message = encodeURIComponent(
-      `Hola, ya llené mi auditoría (${payload.name}) y quiero agendar una llamada para revisar mis resultados.`,
+      `Hola, ya calculé cuánto estoy perdiendo (${payload.name}) y quiero agendar mi auditoría gratuita para revisar mis resultados.`,
     );
     const whatsappUrl = `https://wa.me/${deps.businessWhatsappNumber}?text=${message}`;
 

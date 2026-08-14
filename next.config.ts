@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      { source: '/auditoria-gratuita', destination: '/auditoria-gratuita/index.html' },
+      { source: '/mas-pacientes', destination: '/mas-pacientes/index.html' },
     ]
   },
 }

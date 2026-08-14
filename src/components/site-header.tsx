@@ -16,7 +16,7 @@ export function SiteHeader() {
             Blog
           </Link>
           <Link
-            href="/auditoria-gratuita"
+            href="/mas-pacientes"
             className="whitespace-nowrap rounded-md bg-brand-gradient px-3 py-2 text-xs font-medium text-onix sm:px-4 sm:text-sm"
           >
             Agenda tu Auditoría

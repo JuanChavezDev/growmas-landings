@@ -66,7 +66,7 @@ test('returns a reportUrl and calls email + whatsapp on a valid submission', asy
   await handler(req, res);
 
   assert.equal(res.statusCode, 200);
-  assert.match(res.body.reportUrl, /^https:\/\/growmas\.io\/auditoria-gratuita\/reporte\?d=/);
+  assert.match(res.body.reportUrl, /^https:\/\/growmas\.io\/mas-pacientes\/reporte\?d=/);
   assert.equal(emailCalls.length, 1);
   assert.equal(emailCalls[0].to, 'ana@example.com');
   assert.equal(whatsappCalls.length, 1);

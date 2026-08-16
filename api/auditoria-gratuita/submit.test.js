@@ -127,6 +127,92 @@ test('still returns a reportUrl when the email dependency throws (email is non-b
   assert.match(res.body.reportUrl, /reporte\?d=/);
 });
 
+test('calls sendLeadNotification with the lead details when leadNotificationEmail is configured', async () => {
+  _resetForTests();
+  const notificationCalls = [];
+  const handler = createSubmitHandler({
+    anthropicClient: { messages: { create: async () => { throw new Error('offline in test'); } } },
+    sendReportEmail: async () => ({ id: 'email_1' }),
+    sendReportWhatsapp: async () => ({ ok: true }),
+    sendLeadNotification: async (args) => { notificationCalls.push(args); return { id: 'email_2' }; },
+    resendApiKey: 'resend-key',
+    ycloudApiKey: 'ycloud-key',
+    ycloudTemplateName: 'auditoria_lista',
+    leadNotificationEmail: 'owner@example.com',
+    siteUrl: 'https://growmas.io',
+  });
+
+  const req = {
+    method: 'POST',
+    headers: { 'x-forwarded-for': '9.9.9.6' },
+    body: { name: 'Ana', whatsapp: '+51999999999', email: 'ana@example.com', answers: fullAnswers({}) },
+  };
+  const res = mockRes();
+
+  await handler(req, res);
+
+  assert.equal(res.statusCode, 200);
+  assert.equal(notificationCalls.length, 1);
+  assert.equal(notificationCalls[0].to, 'owner@example.com');
+  assert.equal(notificationCalls[0].name, 'Ana');
+  assert.equal(notificationCalls[0].email, 'ana@example.com');
+  assert.equal(typeof notificationCalls[0].totalMensualRecuperable, 'number');
+});
+
+test('skips sendLeadNotification when leadNotificationEmail is not configured', async () => {
+  _resetForTests();
+  const notificationCalls = [];
+  const handler = createSubmitHandler({
+    anthropicClient: { messages: { create: async () => { throw new Error('offline in test'); } } },
+    sendReportEmail: async () => ({ id: 'email_1' }),
+    sendReportWhatsapp: async () => ({ ok: true }),
+    sendLeadNotification: async (args) => { notificationCalls.push(args); },
+    resendApiKey: 'resend-key',
+    ycloudApiKey: 'ycloud-key',
+    ycloudTemplateName: 'auditoria_lista',
+    siteUrl: 'https://growmas.io',
+  });
+
+  const req = {
+    method: 'POST',
+    headers: { 'x-forwarded-for': '9.9.9.7' },
+    body: { name: 'Ana', whatsapp: '+51999999999', email: 'ana@example.com', answers: fullAnswers({}) },
+  };
+  const res = mockRes();
+
+  await handler(req, res);
+
+  assert.equal(res.statusCode, 200);
+  assert.equal(notificationCalls.length, 0);
+});
+
+test('still returns a reportUrl when sendLeadNotification throws (non-blocking)', async () => {
+  _resetForTests();
+  const handler = createSubmitHandler({
+    anthropicClient: { messages: { create: async () => { throw new Error('offline in test'); } } },
+    sendReportEmail: async () => ({ id: 'email_1' }),
+    sendReportWhatsapp: async () => ({ ok: true }),
+    sendLeadNotification: async () => { throw new Error('resend is down'); },
+    resendApiKey: 'resend-key',
+    ycloudApiKey: 'ycloud-key',
+    ycloudTemplateName: 'auditoria_lista',
+    leadNotificationEmail: 'owner@example.com',
+    siteUrl: 'https://growmas.io',
+  });
+
+  const req = {
+    method: 'POST',
+    headers: { 'x-forwarded-for': '9.9.9.8' },
+    body: { name: 'Ana', whatsapp: '+51999999999', email: 'ana@example.com', answers: fullAnswers({}) },
+  };
+  const res = mockRes();
+
+  await handler(req, res);
+
+  assert.equal(res.statusCode, 200);
+  assert.match(res.body.reportUrl, /reporte\?d=/);
+});
+
 test('rejects non-POST methods with 405', async () => {
   _resetForTests();
   const handler = createSubmitHandler({

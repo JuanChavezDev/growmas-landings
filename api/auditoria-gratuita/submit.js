@@ -5,7 +5,10 @@ const { validateSubmission } = require('../../lib/auditoria-gratuita/validate');
 const { calculateMetrics } = require('../../lib/auditoria-gratuita/metrics');
 const { generateNarrative } = require('../../lib/auditoria-gratuita/narrative');
 const { encodeReportData } = require('../../lib/auditoria-gratuita/report-codec');
-const { sendReportEmail: defaultSendReportEmail } = require('../../lib/auditoria-gratuita/email');
+const {
+  sendReportEmail: defaultSendReportEmail,
+  sendLeadNotification: defaultSendLeadNotification,
+} = require('../../lib/auditoria-gratuita/email');
 const { sendReportWhatsapp: defaultSendReportWhatsapp } = require('../../lib/auditoria-gratuita/whatsapp');
 const { checkRateLimit } = require('../../lib/auditoria-gratuita/rate-limit');
 
@@ -15,9 +18,11 @@ function createSubmitHandler(overrides) {
       anthropicClient: new Anthropic(),
       sendReportEmail: defaultSendReportEmail,
       sendReportWhatsapp: defaultSendReportWhatsapp,
+      sendLeadNotification: defaultSendLeadNotification,
       resendApiKey: process.env.RESEND_API_KEY,
       ycloudApiKey: process.env.YCLOUD_API_KEY,
       ycloudTemplateName: process.env.YCLOUD_TEMPLATE_NAME,
+      leadNotificationEmail: process.env.LEAD_NOTIFICATION_EMAIL,
       siteUrl: process.env.SITE_URL || 'https://growmas.io',
     },
     overrides,
@@ -65,6 +70,22 @@ function createSubmitHandler(overrides) {
       });
     } catch (err) {
       console.error('sendReportWhatsapp failed:', err.message);
+    }
+
+    if (deps.leadNotificationEmail) {
+      try {
+        await deps.sendLeadNotification({
+          apiKey: deps.resendApiKey,
+          to: deps.leadNotificationEmail,
+          name,
+          whatsapp,
+          email,
+          totalMensualRecuperable: metrics.totalMensualRecuperable,
+          reportUrl,
+        });
+      } catch (err) {
+        console.error('sendLeadNotification failed:', err.message);
+      }
     }
 
     res.status(200).json({ reportUrl });

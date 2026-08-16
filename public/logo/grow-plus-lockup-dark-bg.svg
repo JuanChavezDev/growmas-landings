@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 120" width="440" height="120" role="img" aria-label="GROW+">
+  <defs><linearGradient id="i" x1="6" y1="90" x2="92" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#E9C6FF"></stop><stop offset=".45" stop-color="#B15CF5"></stop><stop offset="1" stop-color="#6D28D9"></stop></linearGradient><linearGradient id="g" x1="2" y1="26" x2="62" y2="94" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#E9C6FF"></stop><stop offset=".45" stop-color="#B15CF5"></stop><stop offset="1" stop-color="#6D28D9"></stop></linearGradient><linearGradient id="p" x1="288" y1="33" x2="318" y2="63" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#E9C6FF"></stop><stop offset=".45" stop-color="#B15CF5"></stop><stop offset="1" stop-color="#6D28D9"></stop></linearGradient></defs>
+  <g transform="translate(0,12)">
+    <path d="M6 78h22V56h22V34h16l20-20" stroke="url(#i)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+    <path d="M68 14h18v18" stroke="url(#i)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+  </g>
+  <g transform="translate(114,0)">
+    <path d="M30 30a30 30 0 1 0 30 30H42" stroke="url(#g)" stroke-width="12" stroke-linecap="round" fill="none"></path>
+    <g stroke="#F5EFFB" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M76 90V30h26a15 15 0 0 1 0 30H76"></path>
+      <path d="M98 60l24 30"></path>
+      <circle cx="168" cy="60" r="30"></circle>
+      <path d="M214 30l14 60 14-44 14 44 14-60"></path>
+    </g>
+    <path d="M303 33v30M288 48h30" stroke="url(#p)" stroke-width="12" stroke-linecap="round" fill="none"></path>
+  </g>
+</svg>

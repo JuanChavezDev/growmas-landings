@@ -204,7 +204,7 @@ export default function HomePage() {
             más inteligente.
           </p>
           <Link
-            href="/auditoria-gratuita"
+            href="/mas-pacientes"
             className="mt-8 inline-block rounded-md bg-brand-gradient px-8 py-4 font-medium text-onix shadow-[0_0_30px_rgba(180,92,255,0.35)] transition hover:shadow-[0_0_45px_rgba(180,92,255,0.55)]"
           >
             Quiero mi Auditoría Grow+

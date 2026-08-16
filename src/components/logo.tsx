@@ -1,8 +1,13 @@
+import Image from 'next/image'
+
 export function Logo() {
   return (
-    <span className="text-xl font-semibold tracking-tight">
-      <span className="text-gradient">GROW</span>
-      <span className="text-magenta">+</span>
-    </span>
+    <Image
+      src="/logo/grow-plus-lockup-dark-bg.svg"
+      alt="GROW+"
+      width={110}
+      height={30}
+      priority
+    />
   )
 }

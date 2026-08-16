@@ -140,15 +140,15 @@
 <script>
 (function () {
   var QUESTIONS = [
-    { id: 'clientes_mes', type: 'number', min: 0, prompt: '¿Cuántos pacientes atiendes al mes?' },
-    { id: 'ticket_promedio', type: 'number', min: 0, prompt: '¿Cuál es tu ticket promedio por consulta/paciente? (S/)' },
     { id: 'canal_adquisicion', type: 'choice', options: [
       { value: 'redes_organico', label: 'Redes sociales (orgánico)' },
       { value: 'recomendaciones', label: 'Recomendaciones' },
       { value: 'publicidad_paga', label: 'Publicidad paga' },
       { value: 'no_lo_se', label: 'No tengo claro de dónde vienen' },
     ], prompt: '¿De dónde viene la mayoría de tus pacientes nuevos?' },
-    { id: 'leads_mes', type: 'number_or_unknown', min: 0, prompt: '¿Cuántos leads o contactos nuevos te escribieron el mes pasado?' },
+    { id: 'clientes_mes', type: 'number', min: 0, prompt: '¿Cuántos pacientes atiendes al mes?' },
+    { id: 'ticket_promedio', type: 'number', min: 0, prompt: '¿Cuál es tu precio promedio por consulta/paciente? (S/)' },
+    { id: 'leads_mes', type: 'number_or_unknown', min: 0, prompt: '¿Cuántos contactos nuevos te escribieron el mes pasado?' },
     { id: 'tiempo_respuesta', type: 'choice', options: [
       { value: 'minutos', label: 'En minutos' },
       { value: 'mismo_dia', label: 'El mismo día' },

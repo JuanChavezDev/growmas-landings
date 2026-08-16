@@ -160,6 +160,48 @@ src="https://www.facebook.com/tr?id=1251797755579746&ev=PageView&noscript=1"
 
 <script>
 (function () {
+  var video = document.querySelector('.vsl-video-wrap video');
+  if (!video) return;
+
+  var milestonesFired = { 25: false, 50: false, 75: false, 100: false };
+  var startedFired = false;
+
+  function trackVideoEvent(eventName, extra) {
+    // TODO: cuando exista el endpoint del Business OS, agregar acá el envío real, ej:
+    // fetch('https://TU-BUSINESS-OS.vercel.app/api/track', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(Object.assign({ event: eventName, page: 'mas-pacientes' }, extra || {})),
+    // });
+    console.log('[video-tracking]', eventName, extra || '');
+  }
+
+  video.addEventListener('play', function () {
+    if (!startedFired) {
+      startedFired = true;
+      trackVideoEvent('video_start');
+    }
+  });
+
+  video.addEventListener('timeupdate', function () {
+    if (!video.duration) return;
+    var pct = (video.currentTime / video.duration) * 100;
+    [25, 50, 75, 100].forEach(function (m) {
+      if (pct >= m && !milestonesFired[m]) {
+        milestonesFired[m] = true;
+        trackVideoEvent('video_progress_' + m, { percent: m });
+      }
+    });
+  });
+
+  video.addEventListener('ended', function () {
+    trackVideoEvent('video_complete');
+  });
+})();
+</script>
+
+<script>
+(function () {
   var QUESTIONS = [
     { id: 'canal_adquisicion', type: 'choice', options: [
       { value: 'redes_organico', label: 'Redes sociales (orgánico)' },

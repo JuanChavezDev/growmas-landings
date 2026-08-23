@@ -1,7 +1,8 @@
 {
   "framework": "nextjs",
   "rewrites": [
-    { "source": "/mas-pacientes/reporte", "destination": "/api/auditoria-gratuita/reporte" }
+    { "source": "/mas-pacientes/reporte", "destination": "/api/auditoria-gratuita/reporte" },
+    { "source": "/mas-pacientes/video", "destination": "/api/auditoria-gratuita/video" }
   ],
   "functions": {
     "api/auditoria-gratuita/submit.js": { "maxDuration": 60 }

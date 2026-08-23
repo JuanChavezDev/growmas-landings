@@ -213,10 +213,10 @@ src="https://www.facebook.com/tr?id=1251797755579746&ev=PageView&noscript=1"
       { value: 'tengo_proceso', label: 'Tengo un proceso de seguimiento' },
       { value: 'a_veces', label: 'A veces, si me acuerdo' },
       { value: 'casi_nunca', label: 'Casi nunca vuelvo a escribirle' },
-    ], prompt: 'Cuando alguien muestra interés pero no agenda al toque, ¿le haces seguimiento?' },
+    ], prompt: 'Cuando alguien muestra interés pero no agenda de inmediato, ¿le haces seguimiento?' },
     { id: 'tasa_seguimiento', type: 'scale10', section: SECTION_2,
       showIf: function (a) { return a.hace_seguimiento === 'tengo_proceso' || a.hace_seguimiento === 'a_veces'; },
-      prompt: 'De esos que no agendan al toque, ¿a cuántos de cada 10 logras contactar de nuevo?' },
+      prompt: 'De esos que no agendan de inmediato, ¿a cuántos de cada 10 logras contactar de nuevo?' },
     { id: 'tasa_asistencia', type: 'scale10', section: SECTION_3, prompt: 'De cada 10 citas o reservas que agendas, ¿cuántas se presentan realmente?' },
     { id: 'tiene_recordatorio', type: 'choice', section: SECTION_3, options: [
       { value: 'automatico', label: 'Sí, automático' },
